@@ -3,7 +3,9 @@ package neo4jclient
 import (
 	"encoding/base64"
 	"fmt"
-	"os"
+	"log"
+
+	"github.com/hippoai/env"
 )
 
 // Neo database structure
@@ -34,14 +36,12 @@ func NewConnection(username, password, endpoint string) (*Neo, error) {
 
 // NewConnectionFromEnv instanciates from environment variables
 func NewConnectionFromEnv() (*Neo, error) {
-	username := os.Getenv(ENV_DB_USERNAME)
-	password := os.Getenv(ENV_DB_PASSWORD)
-	endpoint := os.Getenv(ENV_DB_ENDPOINT)
 
-	if username == "" || password == "" || endpoint == "" {
-		return nil, errorDBEnv()
+	parsed, err := env.Parse(ENV_DB_USERNAME, ENV_DB_PASSWORD, ENV_DB_ENDPOINT)
+	if err != nil {
+		log.Fatalf(err.Error())
 	}
 
-	return NewConnection(username, password, endpoint)
+	return NewConnection(parsed[ENV_DB_USERNAME], parsed[ENV_DB_PASSWORD], parsed[ENV_DB_ENDPOINT])
 
 }
