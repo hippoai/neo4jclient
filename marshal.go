@@ -3,7 +3,7 @@ package neo4jclient
 // The following types help marshal a Payload
 
 type Parameters struct {
-	Props map[string]interface{} `json:props`
+	Props map[string]interface{} `json:"props"`
 }
 type Statement struct {
 	Statement          string     `json:"statement"`
@@ -24,6 +24,7 @@ func NewStatement(statement string, props map[string]interface{}) *Statement {
 	if props != nil {
 		s.Parameters = Parameters{Props: props}
 	}
+
 	return s
 }
 

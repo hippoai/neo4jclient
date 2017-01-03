@@ -5,8 +5,8 @@ const (
 	ENV_DB_PASSWORD = "DB_PASSWORD"
 	ENV_DB_ENDPOINT = "DB_ENDPOINT"
 
-	ERR_DB_CONNECT = "No DB username or password provided"
-	ERR_NEO        = "Errors in the query"
+	ERR_DB_CONNECT = "ERR_DB_CONNECT"
+	ERR_NEO        = "ERR_NEO"
 
 	RESULT_DATA_CONTENTS = "graph"
 

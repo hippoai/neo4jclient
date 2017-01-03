@@ -1,11 +1,11 @@
 package neo4jclient
 
-import "errors"
+import "github.com/hippoai/goerr"
 
 func errorDBEnv() error {
-	return errors.New(ERR_DB_CONNECT)
+	return goerr.New(ERR_DB_CONNECT, map[string]interface{}{})
 }
 
 func errNeo() error {
-	return errors.New(ERR_NEO)
+	return goerr.New(ERR_NEO, map[string]interface{}{})
 }
