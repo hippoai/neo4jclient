@@ -91,12 +91,7 @@ func getPersons(n *Neo, t *testing.T) *graphgo.Graph {
 	props := map[string]interface{}{}
 	payload := NewSinglePayload(statement, props)
 
-	response, err := n.Request(payload)
-	if err != nil {
-		t.Errorf(err.Error())
-	}
-
-	g, err := Convert(response)
+	g, err := n.RequestAndConvert(payload)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
