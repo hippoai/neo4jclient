@@ -20,12 +20,6 @@ func TestQuery(t *testing.T) {
 
 	var g *graphgo.Graph
 
-	g = delete(n, t)
-	// Must be empty graph
-	if (len(g.Nodes) > 0) || (len(g.Edges) > 0) {
-		t.Fatal("Not empty graph after deletion")
-	}
-
 	g = insert(n, t)
 	// Nodes - Must have two labels: Person and City, two nodes: Patrick and Denver
 	// Edges - Two labels + One relationship between Patrick and Denver
@@ -40,12 +34,25 @@ func TestQuery(t *testing.T) {
 		t.Fatal("Wrong number nodes and edges for the persons")
 	}
 
+	g = delete(n, t)
+	// Must be empty graph
+	if (len(g.Nodes) > 0) || (len(g.Edges) > 0) {
+		t.Fatal("Not empty graph after deletion")
+	}
+
+	g = getPersons(n, t)
+	// Nodes - One label and one person
+	// Edges - One label
+	if (len(g.Nodes) != 0) || (len(g.Edges) != 0) {
+		t.Fatal("Should be empty now")
+	}
+
 	t.Logf(prettyPrint(g))
 
 }
 
 func delete(n *Neo, t *testing.T) *graphgo.Graph {
-	statement := "MATCH (x) OPTIONAL MATCH (x)-[r]-(y) DELETE x, r, y"
+	statement := "MATCH (x {key: \"person.patrick\"}) MATCH (y {key: \"city.denver\"}) MATCH (x)-[r {key: \"person.patrick.LIVES_IN.city.denver\"}]-(y) DELETE x, r, y"
 	props := map[string]interface{}{}
 	payload := NewSinglePayload(statement, props)
 
