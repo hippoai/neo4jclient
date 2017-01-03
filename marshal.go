@@ -41,6 +41,12 @@ func NewSinglePayload(statement string, props map[string]interface{}) *Payload {
 	return NewPayload(s)
 }
 
+// NewSinglePayload instanciates a payload from a single statement
+func NewSinglePayloadNoProps(statement string) *Payload {
+	s := NewStatement(statement, map[string]interface{}{})
+	return NewPayload(s)
+}
+
 // The following types help unmarshal a response
 
 type ResultNode struct {
