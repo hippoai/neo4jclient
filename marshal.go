@@ -43,8 +43,7 @@ func NewSinglePayload(statement string, props map[string]interface{}) *Payload {
 
 // NewSinglePayload instanciates a payload from a single statement
 func NewSinglePayloadNoProps(statement string) *Payload {
-	s := NewStatement(statement, map[string]interface{}{})
-	return NewPayload(s)
+	return NewSinglePayload(statement, map[string]interface{}{})
 }
 
 // The following types help unmarshal a response
