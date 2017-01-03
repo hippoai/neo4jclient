@@ -1,3 +1,5 @@
+// Package neo4jclient implements a client for Neo4J
+// It returns data in github.com/hippoai/graphgo format
 package neo4jclient
 
 import (
