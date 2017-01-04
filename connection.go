@@ -23,8 +23,6 @@ func NewConnection(username, password, endpoint string) (*Neo, error) {
 	token := base64.StdEncoding.EncodeToString(data)
 	authHeader := fmt.Sprintf("Basic %s", token)
 
-	log.Println("authHeader", authHeader)
-
 	neo := &Neo{
 		username:   username,
 		password:   password,
