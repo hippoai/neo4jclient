@@ -6,6 +6,8 @@ func errorDBEnv() error {
 	return goerr.New(ERR_DB_CONNECT, map[string]interface{}{})
 }
 
-func errNeo() error {
-	return goerr.New(ERR_NEO, map[string]interface{}{})
+func errNeo(payload interface{}) error {
+	return goerr.New(ERR_NEO, map[string]interface{}{
+		"reason": payload,
+	})
 }

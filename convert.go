@@ -22,7 +22,7 @@ func Convert(r *Response) (*graphgo.Graph, error) {
 
 	if len(r.Errors) > 0 {
 		log.Println("Response error", r.Errors)
-		return nil, errNeo()
+		return nil, errNeo(r.Errors)
 	}
 
 	// Initialize an empty graph
