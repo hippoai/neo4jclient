@@ -5,7 +5,6 @@ package neo4jclient
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -46,8 +45,6 @@ func (n *Neo) Request(payload *Payload) (*Response, error) {
 	// >> Test here
 	x := map[string]interface{}{}
 	err = json.Unmarshal(body, &x)
-
-	fmt.Println("ok", goutil.Pretty(x))
 
 	deserializedBody := &Response{}
 	err = goutil.JsonRestruct(x, deserializedBody)

@@ -49,16 +49,18 @@ func NewSinglePayloadNoProps(statement string) *Payload {
 // The following types help unmarshal a response
 
 type ResultNode struct {
-	Key    string                 `json:"id"`
-	Labels []string               `json:"labels"`
-	Props  map[string]interface{} `json:"properties"`
+	LegacyKey string                 `json:"id"`
+	Labels    []string               `json:"labels"`
+	Props     map[string]interface{} `json:"properties"`
+	Deleted   bool                   `json:"deleted"`
 }
 type ResultEdge struct {
-	Key   string                 `json:"id"`
-	Label string                 `json:"type"`
-	Start string                 `json:"startNode"`
-	End   string                 `json:"endNode"`
-	Props map[string]interface{} `json:"properties"`
+	LegacyKey string                 `json:"id"`
+	Label     string                 `json:"type"`
+	Start     string                 `json:"startNode"`
+	End       string                 `json:"endNode"`
+	Props     map[string]interface{} `json:"properties"`
+	Deleted   bool                   `json:"deleted"`
 }
 type ResultGraph struct {
 	Nodes []ResultNode `json:"nodes"`
