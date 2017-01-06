@@ -11,3 +11,9 @@ func errNeo(payload interface{}) error {
 		"reason": payload,
 	})
 }
+
+func errDeleteButNoReturn(cypher string) error {
+	return goerr.New(ERR_DELETE_BUT_NO_RETURN, map[string]interface{}{
+		"cypher": ERR_DELETE_BUT_NO_RETURN,
+	})
+}

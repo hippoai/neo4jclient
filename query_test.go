@@ -17,40 +17,44 @@ func TestQuery(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	var gr *GraphResponse
+	var out *Output
 
-	gr = insert(n, t)
+	out = insert(n, t)
 	// Nodes - Must have two labels: Person and City, two nodes: Patrick and Denver
 	// Edges - Two labels + One relationship between Patrick and Denver
-	if (len(gr.Merge.Nodes) != 4) || (len(gr.Merge.Edges) != 3) {
+	if (len(out.Merge.Nodes) != 4) || (len(out.Merge.Edges) != 3) {
 		t.Fatal("Wrong number nodes and edges")
 	}
 
-	gr = getPersons(n, t)
+	out = getPersons(n, t)
 	// Nodes - One label and one person
 	// Edges - One label
-	if (len(gr.Merge.Nodes) != 2) || (len(gr.Merge.Edges) != 1) {
+	if (len(out.Merge.Nodes) != 2) || (len(out.Merge.Edges) != 1) {
 		t.Fatal("Wrong number nodes and edges for the persons")
 	}
 
-	gr = delete(n, t)
+	out = delete(n, t)
 	// Must be empty graph
-	if (len(gr.Merge.Nodes) > 0) || (len(gr.Merge.Edges) > 0) {
+	if (len(out.Merge.Nodes) > 0) || (len(out.Merge.Edges) > 0) {
 		t.Fatal("Not empty graph after deletion")
 	}
+	// And the size of the deleted nodes and edges must be exact
+	if (len(out.Delete.Nodes) != 2) || (len(out.Delete.Edges) != 1) {
+		t.Fatal("Wrong deleted nodes and edges size")
+	}
 
-	gr = getPersons(n, t)
+	out = getPersons(n, t)
 	// Nodes - One label and one person
 	// Edges - One label
-	if (len(gr.Merge.Nodes) != 0) || (len(gr.Merge.Edges) != 0) {
+	if (len(out.Merge.Nodes) != 0) || (len(out.Merge.Edges) != 0) {
 		t.Fatal("Should be empty now")
 	}
 
-	t.Logf(goutil.Pretty(gr))
+	t.Logf(goutil.Pretty(out))
 
 }
 
-func delete(n *Neo, t *testing.T) *GraphResponse {
+func delete(n *Neo, t *testing.T) *Output {
 	statement := `
     MATCH (person {key: {props}.personKey})
     MATCH (city {key: {props}.cityKey})
@@ -70,18 +74,18 @@ func delete(n *Neo, t *testing.T) *GraphResponse {
 		t.Errorf(err.Error())
 	}
 
-	gr, err := Convert(response)
+	out, err := Convert(response)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf(goutil.Pretty(gr))
+	t.Logf(goutil.Pretty(out))
 
-	return gr
+	return out
 
 }
 
-func insert(n *Neo, t *testing.T) *GraphResponse {
+func insert(n *Neo, t *testing.T) *Output {
 	statement := `
     MERGE (x:Person {name: {props}.personName, key: {props}.personKey})-[r:LIVES_IN {key: {props}.relKey}]->(s:City {name: {props}.city, key: {props}.cityKey})
     RETURN x, r, s
@@ -100,18 +104,18 @@ func insert(n *Neo, t *testing.T) *GraphResponse {
 		t.Errorf(err.Error())
 	}
 
-	gr, err := Convert(response)
+	out, err := Convert(response)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf(goutil.Pretty(gr))
+	t.Logf(goutil.Pretty(out))
 
-	return gr
+	return out
 
 }
 
-func getPersons(n *Neo, t *testing.T) *GraphResponse {
+func getPersons(n *Neo, t *testing.T) *Output {
 	statement := `
     MATCH (x:Person)
     RETURN x
