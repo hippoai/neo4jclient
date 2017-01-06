@@ -38,6 +38,10 @@ func TestQuery(t *testing.T) {
 	if (len(out.Merge.Nodes) > 0) || (len(out.Merge.Edges) > 0) {
 		t.Fatal("Not empty graph after deletion")
 	}
+	// And the size of the deleted nodes and edges must be exact
+	if (len(out.Delete.Nodes) != 2) || (len(out.Delete.Edges) != 1) {
+		t.Fatal("Wrong deleted nodes and edges size")
+	}
 
 	out = getPersons(n, t)
 	// Nodes - One label and one person

@@ -3,8 +3,8 @@ package neo4jclient
 import "github.com/hippoai/graphgo"
 
 type Delete struct {
-	Nodes []string
-	Edges []string
+	Nodes []string `json:"nodes"`
+	Edges []string `json:"edges"`
 }
 
 // Output defines the expected output from this client
