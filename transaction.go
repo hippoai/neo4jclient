@@ -7,10 +7,18 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/hippoai/goutil"
 )
 
 // Request calls the database and returns the response
 func (n *Neo) Request(payload *Payload) (*Response, error) {
+
+	// First, validate the payload
+	err := payload.Validate()
+	if err != nil {
+		return nil, err
+	}
 
 	serializedPayload, err := json.Marshal(payload)
 	if err != nil {
@@ -40,11 +48,17 @@ func (n *Neo) Request(payload *Payload) (*Response, error) {
 		return nil, err
 	}
 
+	// >> Test here
+	x := map[string]interface{}{}
+	err = json.Unmarshal(body, &x)
+
 	deserializedBody := &Response{}
-	err = json.Unmarshal(body, deserializedBody)
+	err = goutil.JsonRestruct(x, deserializedBody)
+	// err = json.Unmarshal(body, deserializedBody)
 	if err != nil {
 		return nil, err
 	}
+	// << Test ends
 
 	return deserializedBody, nil
 

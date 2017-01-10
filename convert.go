@@ -1,32 +1,21 @@
 package neo4jclient
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/hippoai/graphgo"
 )
 
-// getLabelKey returns the key for a label node
-func getLabelKey(label string) string {
-	return fmt.Sprintf("label.%s", label)
-}
-
-// getLabelRelKey returns the key for the relationship between a node and its label
-func getLabelRelKey(nodeKey, label string) string {
-	return fmt.Sprintf("%s.%s.%s", nodeKey, graphgo.NODE_LABEL_EDGE_LABEL, label)
-}
-
-// Convert neo4J response to Graphgo's format
-func Convert(r *Response) (*graphgo.Graph, error) {
+// Convert neo4J response to Output type
+func Convert(r *Response) (*Output, error) {
 
 	if len(r.Errors) > 0 {
 		log.Println("Response error", r.Errors)
-		return nil, errNeo()
+		return nil, errNeo(r.Errors)
 	}
 
-	// Initialize an empty graph
-	g := graphgo.NewEmptyGraph()
+	// Initialize an empty graph response
+	out := NewOutput()
 
 	nodesKeyMap := map[string]string{}
 
@@ -38,19 +27,27 @@ func Convert(r *Response) (*graphgo.Graph, error) {
 
 			// First add all the nodes
 			for _, resultNode := range resultData.Graph.Nodes {
-				customKey := getCustomKey(resultNode.Key, resultNode.Props)
+				customKey := getCustomKey(resultNode.LegacyKey, resultNode.Props)
 
-				nodesKeyMap[resultNode.Key] = customKey
+				nodesKeyMap[resultNode.LegacyKey] = customKey
+
+				// Add deleted nodes
+				if resultNode.Deleted {
+					out.Delete.Nodes = append(out.Delete.Nodes, resultNode.LegacyKey)
+					continue
+				}
+
+				// Add to legacy index
+				out.Merge.AddNodeLegacyIndex(resultNode.LegacyKey, customKey)
 
 				// Add the node and its properties
-
-				node, _ := g.MergeNode(customKey, resultNode.Props)
+				node, _ := out.Merge.MergeNode(customKey, resultNode.Props)
 
 				// Add the labels
 				for _, resultLabel := range resultNode.Labels {
 					_labelKey := getLabelKey(resultLabel)
-					g.MergeNode(_labelKey, nil)
-					g.MergeEdge(
+					out.Merge.MergeNode(_labelKey, nil)
+					out.Merge.MergeEdge(
 						getLabelRelKey(node.Key, resultLabel),
 						graphgo.NODE_LABEL_EDGE_LABEL,
 						customKey,
@@ -63,10 +60,22 @@ func Convert(r *Response) (*graphgo.Graph, error) {
 
 			// Now, add all the relationships
 			for _, resultEdge := range resultData.Graph.Edges {
+
+				// Add deleted edges
+				if resultEdge.Deleted {
+					out.Delete.Edges = append(out.Delete.Edges, resultEdge.LegacyKey)
+					continue
+				}
+
+				// Add edges to merge
 				startNodeKey := nodesKeyMap[resultEdge.Start]
 				endNodeKey := nodesKeyMap[resultEdge.End]
-				customKey := getCustomKey(resultEdge.Key, resultEdge.Props)
-				g.MergeEdge(
+				customKey := getCustomKey(resultEdge.LegacyKey, resultEdge.Props)
+
+				// Add to legacy index
+				out.Merge.AddEdgeLegacyIndex(resultEdge.LegacyKey, customKey)
+
+				out.Merge.MergeEdge(
 					customKey,
 					resultEdge.Label,
 					startNodeKey,
@@ -79,15 +88,6 @@ func Convert(r *Response) (*graphgo.Graph, error) {
 
 	}
 
-	return g, nil
+	return out, nil
 
-}
-
-// getCustomKey instead of database index key
-func getCustomKey(key string, props map[string]interface{}) string {
-	customKeyItf, ok := props["key"]
-	if ok {
-		return customKeyItf.(string)
-	}
-	return key
 }

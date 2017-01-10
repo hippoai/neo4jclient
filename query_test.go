@@ -1,10 +1,9 @@
 package neo4jclient
 
 import (
-	"encoding/json"
 	"testing"
 
-	"github.com/hippoai/graphgo"
+	"github.com/hippoai/goutil"
 )
 
 func TestQuery(t *testing.T) {
@@ -18,35 +17,56 @@ func TestQuery(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	var g *graphgo.Graph
+	var out *Output
 
-	g = delete(n, t)
-	// Must be empty graph
-	if (len(g.Nodes) > 0) || (len(g.Edges) > 0) {
-		t.Fatal("Not empty graph after deletion")
-	}
-
-	g = insert(n, t)
+	out = insert(n, t)
 	// Nodes - Must have two labels: Person and City, two nodes: Patrick and Denver
 	// Edges - Two labels + One relationship between Patrick and Denver
-	if (len(g.Nodes) != 4) || (len(g.Edges) != 3) {
+	if (len(out.Merge.Nodes) != 4) || (len(out.Merge.Edges) != 3) {
 		t.Fatal("Wrong number nodes and edges")
 	}
 
-	g = getPersons(n, t)
+	out = getPersons(n, t)
 	// Nodes - One label and one person
 	// Edges - One label
-	if (len(g.Nodes) != 2) || (len(g.Edges) != 1) {
+	if (len(out.Merge.Nodes) != 2) || (len(out.Merge.Edges) != 1) {
 		t.Fatal("Wrong number nodes and edges for the persons")
 	}
 
-	t.Logf(prettyPrint(g))
+	out = delete(n, t)
+	// Must be empty graph
+	if (len(out.Merge.Nodes) > 0) || (len(out.Merge.Edges) > 0) {
+		t.Fatal("Not empty graph after deletion")
+	}
+	// And the size of the deleted nodes and edges must be exact
+	if (len(out.Delete.Nodes) != 2) || (len(out.Delete.Edges) != 1) {
+		t.Fatal("Wrong deleted nodes and edges size")
+	}
+
+	out = getPersons(n, t)
+	// Nodes - One label and one person
+	// Edges - One label
+	if (len(out.Merge.Nodes) != 0) || (len(out.Merge.Edges) != 0) {
+		t.Fatal("Should be empty now")
+	}
+
+	t.Logf(goutil.Pretty(out))
 
 }
 
-func delete(n *Neo, t *testing.T) *graphgo.Graph {
-	statement := "MATCH (x) OPTIONAL MATCH (x)-[r]-(y) DELETE x, r, y"
-	props := map[string]interface{}{}
+func delete(n *Neo, t *testing.T) *Output {
+	statement := `
+    MATCH (person {key: {props}.personKey})
+    MATCH (city {key: {props}.cityKey})
+    MATCH (person)-[r {key: {props}.relKey}]-(city)
+    DELETE city, r, person
+    RETURN city, r, person
+  `
+	props := map[string]interface{}{
+		"personKey": "person.patrick",
+		"cityKey":   "city.denver",
+		"relKey":    "person.patrick.LIVES_IN.city.denver",
+	}
 	payload := NewSinglePayload(statement, props)
 
 	response, err := n.Request(payload)
@@ -54,20 +74,29 @@ func delete(n *Neo, t *testing.T) *graphgo.Graph {
 		t.Errorf(err.Error())
 	}
 
-	g, err := Convert(response)
+	out, err := Convert(response)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf(prettyPrint(g))
+	t.Logf(goutil.Pretty(out))
 
-	return g
+	return out
 
 }
 
-func insert(n *Neo, t *testing.T) *graphgo.Graph {
-	statement := "MERGE (x:Person {name: \"patrick\", key: \"person.patrick\"})-[r:LIVES_IN {key: \"person.patrick.LIVES_IN.city.denver\"}]->(s:City {name: \"Denver\", key: \"city.denver\"}) RETURN x, r, s"
-	props := map[string]interface{}{}
+func insert(n *Neo, t *testing.T) *Output {
+	statement := `
+    MERGE (x:Person {name: {props}.personName, key: {props}.personKey})-[r:LIVES_IN {key: {props}.relKey}]->(s:City {name: {props}.city, key: {props}.cityKey})
+    RETURN x, r, s
+  `
+	props := map[string]interface{}{
+		"personKey":  "person.patrick",
+		"personName": "patrick",
+		"city":       "denver",
+		"cityKey":    "city.denver",
+		"relKey":     "person.patrick.LIVES_IN.city.denver",
+	}
 	payload := NewSinglePayload(statement, props)
 
 	response, err := n.Request(payload)
@@ -75,34 +104,32 @@ func insert(n *Neo, t *testing.T) *graphgo.Graph {
 		t.Errorf(err.Error())
 	}
 
-	g, err := Convert(response)
+	out, err := Convert(response)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf(prettyPrint(g))
+	t.Logf(goutil.Pretty(out))
 
-	return g
+	return out
 
 }
 
-func getPersons(n *Neo, t *testing.T) *graphgo.Graph {
-	statement := "MATCH (x:Person) RETURN x"
+func getPersons(n *Neo, t *testing.T) *Output {
+	statement := `
+    MATCH (x:Person)
+    RETURN x
+  `
 	props := map[string]interface{}{}
 	payload := NewSinglePayload(statement, props)
 
-	g, err := n.RequestAndConvert(payload)
+	gr, err := n.RequestAndConvert(payload)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
 
-	t.Logf(prettyPrint(g))
+	t.Logf(goutil.Pretty(gr))
 
-	return g
+	return gr
 
-}
-
-func prettyPrint(x interface{}) string {
-	b, _ := json.MarshalIndent(x, "", "  ")
-	return string(b)
 }
