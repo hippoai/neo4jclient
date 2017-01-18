@@ -7,7 +7,7 @@ func (neo *Neo) RequestAndConvert(payload *Payload) (*Output, error) {
 	response, err := neo.Request(payload)
 
 	if err != nil {
-		return nil, err
+		return nil, errNeo4JRequest()
 	}
 
 	return Convert(response)
