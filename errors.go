@@ -17,3 +17,7 @@ func errDeleteButNoReturn(cypher string) error {
 		"cypher": ERR_DELETE_BUT_NO_RETURN,
 	})
 }
+
+func errNeo4JRequest() error {
+	return goerr.NewS(ERR_NEO4J_REQUEST)
+}
