@@ -2,7 +2,10 @@ package neo4jclient
 
 import (
 	"fmt"
+	"log"
 	"strings"
+
+	"github.com/hippoai/goerr"
 )
 
 // compressQuery removes spaces and blank lines
@@ -19,7 +22,7 @@ func insertProp(q, key string, value interface{}) string {
 		return strings.Replace(
 			q,
 			fmt.Sprintf("{props}.%s", key),
-			fmt.Sprintf("\"%s\"", valueStr),
+			fmt.Sprintf("\"%s\"", compressQuery(valueStr)),
 			-1,
 		)
 	} else {
@@ -33,7 +36,7 @@ func insertProp(q, key string, value interface{}) string {
 }
 
 // IsSameQuery assesses whether two queries are the same
-func IsSameQuery(expected string, statement *Statement) bool {
+func IsSameQuery(expected string, statement *Statement) error {
 	cExpected := compressQuery(expected)
 	cOriginal := compressQuery(statement.Statement)
 
@@ -43,5 +46,27 @@ func IsSameQuery(expected string, statement *Statement) bool {
 		}
 	}
 
-	return cExpected == cOriginal
+	if cExpected != cOriginal {
+		log.Println(cExpected)
+		log.Println(cOriginal)
+	}
+
+	if cExpected != cOriginal {
+		return ErrSameQuery(cExpected, cOriginal, expected, statement)
+	}
+
+	return nil
+}
+
+func ErrSameQuery(cExpected, cOriginal, expected string, statement *Statement) error {
+	return goerr.New(
+		"ERR_NOT_SAME_QUERY",
+		map[string]interface{}{
+			"expected":  expected,
+			"statement": statement.Statement,
+			"props":     statement.Parameters.Props,
+			"cExpected": cExpected,
+			"cOriginal": cOriginal,
+		},
+	)
 }

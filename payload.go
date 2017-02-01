@@ -28,6 +28,10 @@ func NewStatement(statement string, props map[string]interface{}) *Statement {
 	return s
 }
 
+func NewStatementNoProps(statement string) *Statement {
+	return NewStatement(statement, map[string]interface{}{})
+}
+
 // NewPayload instanciates a payload from a list of statement
 func NewPayload(statements ...*Statement) *Payload {
 	return &Payload{
