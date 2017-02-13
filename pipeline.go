@@ -1,8 +1,10 @@
 package neo4jclient
 
+import "github.com/hippoai/graphgo"
+
 // RequestAndConvert requests the database
 // and converts it to Graphgo format
-func (neo *Neo) RequestAndConvert(payload *Payload) (*Output, error) {
+func (neo *Neo) RequestAndConvert(payload *Payload) (*graphgo.Output, error) {
 
 	response, err := neo.Request(payload)
 

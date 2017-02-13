@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/hippoai/goutil"
+	"github.com/hippoai/graphgo"
 )
 
 func TestQuery(t *testing.T) {
@@ -17,7 +18,7 @@ func TestQuery(t *testing.T) {
 		t.Errorf(err.Error())
 	}
 
-	var out *Output
+	var out *graphgo.Output
 
 	out = insert(n, t)
 	// Nodes - Must have two labels: Person and City, two nodes: Patrick and Denver
@@ -39,8 +40,11 @@ func TestQuery(t *testing.T) {
 		t.Fatal("Not empty graph after deletion")
 	}
 	// And the size of the deleted nodes and edges must be exact
-	if (len(out.Delete.Nodes) != 2) || (len(out.Delete.Edges) != 1) {
-		t.Fatal("Wrong deleted nodes and edges size")
+	if (len(out.Delete.LegacyNodes) != 2) || (len(out.Delete.LegacyEdges) != 1) {
+		t.Fatalf("Wrong deleted nodes and edges size, nodes: %d, edges: %d",
+			len(out.Delete.LegacyNodes),
+			len(out.Delete.LegacyEdges),
+		)
 	}
 
 	out = getPersons(n, t)
@@ -54,7 +58,7 @@ func TestQuery(t *testing.T) {
 
 }
 
-func delete(n *Neo, t *testing.T) *Output {
+func delete(n *Neo, t *testing.T) *graphgo.Output {
 	statement := `
     MATCH (person {key: {props}.personKey})
     MATCH (city {key: {props}.cityKey})
@@ -85,7 +89,7 @@ func delete(n *Neo, t *testing.T) *Output {
 
 }
 
-func insert(n *Neo, t *testing.T) *Output {
+func insert(n *Neo, t *testing.T) *graphgo.Output {
 	statement := `
     MERGE (x:Person {name: {props}.personName, key: {props}.personKey})-[r:LIVES_IN {key: {props}.relKey}]->(s:City {name: {props}.city, key: {props}.cityKey})
     RETURN x, r, s
@@ -115,7 +119,7 @@ func insert(n *Neo, t *testing.T) *Output {
 
 }
 
-func getPersons(n *Neo, t *testing.T) *Output {
+func getPersons(n *Neo, t *testing.T) *graphgo.Output {
 	statement := `
     MATCH (x:Person)
     RETURN x
