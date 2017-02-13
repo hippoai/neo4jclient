@@ -7,7 +7,7 @@ import (
 )
 
 // Convert neo4J response to Output type
-func Convert(r *Response) (*Output, error) {
+func Convert(r *Response) (*graphgo.Output, error) {
 
 	if len(r.Errors) > 0 {
 		log.Println("Response error", r.Errors)
@@ -15,7 +15,7 @@ func Convert(r *Response) (*Output, error) {
 	}
 
 	// Initialize an empty graph response
-	out := NewOutput()
+	out := graphgo.NewOutput()
 
 	nodesKeyMap := map[string]string{}
 
@@ -33,7 +33,7 @@ func Convert(r *Response) (*Output, error) {
 
 				// Add deleted nodes
 				if resultNode.Deleted {
-					out.Delete.Nodes = append(out.Delete.Nodes, resultNode.LegacyKey)
+					out.Delete.LegacyNodes = append(out.Delete.LegacyNodes, resultNode.LegacyKey)
 					continue
 				}
 
@@ -63,7 +63,7 @@ func Convert(r *Response) (*Output, error) {
 
 				// Add deleted edges
 				if resultEdge.Deleted {
-					out.Delete.Edges = append(out.Delete.Edges, resultEdge.LegacyKey)
+					out.Delete.LegacyEdges = append(out.Delete.LegacyEdges, resultEdge.LegacyKey)
 					continue
 				}
 
