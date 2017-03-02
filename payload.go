@@ -49,3 +49,10 @@ func NewSinglePayload(statement string, props map[string]interface{}) *Payload {
 func NewSinglePayloadNoProps(statement string) *Payload {
 	return NewSinglePayload(statement, map[string]interface{}{})
 }
+
+func (p *Payload) SetDataContentsToRow() {
+	r := []string{"row"}
+	for _, statement := range p.Statements {
+		statement.ResultDataContents = r
+	}
+}

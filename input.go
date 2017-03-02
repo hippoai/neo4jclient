@@ -21,7 +21,9 @@ type ResultGraph struct {
 	Edges []ResultEdge `json:"relationships"`
 }
 type ResultData struct {
-	Graph ResultGraph `json:"graph"`
+	Row   []interface{} `json:"row"`
+	Meta  []interface{} `json:"meta"`
+	Graph ResultGraph   `json:"graph"`
 }
 type Result struct {
 	Columns []string     `json:"columns"`
