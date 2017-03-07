@@ -6,7 +6,7 @@ type Parameters struct {
 	Props map[string]interface{} `json:"props"`
 }
 type Statement struct {
-	Cypher             string     `json:"cypher"`
+	Cypher             string     `json:"statement"`
 	Parameters         Parameters `json:"parameters"`
 	ResultDataContents []string   `json:"resultDataContents"`
 	Description        string     `json:"description"`
