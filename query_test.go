@@ -71,7 +71,7 @@ func delete(n *Neo, t *testing.T) *graphgo.Output {
 		"cityKey":   "city.denver",
 		"relKey":    "person.patrick.LIVES_IN.city.denver",
 	}
-	payload := NewSinglePayload(statement, props)
+	payload := NewSinglePayload(statement, "", props)
 
 	response, err := n.Request(payload)
 	if err != nil {
@@ -101,7 +101,7 @@ func insert(n *Neo, t *testing.T) *graphgo.Output {
 		"cityKey":    "city.denver",
 		"relKey":     "person.patrick.LIVES_IN.city.denver",
 	}
-	payload := NewSinglePayload(statement, props)
+	payload := NewSinglePayload(statement, "", props)
 
 	response, err := n.Request(payload)
 	if err != nil {
@@ -125,7 +125,7 @@ func getPersons(n *Neo, t *testing.T) *graphgo.Output {
     RETURN x
   `
 	props := map[string]interface{}{}
-	payload := NewSinglePayload(statement, props)
+	payload := NewSinglePayload(statement, "", props)
 
 	gr, err := n.RequestAndConvert(payload)
 	if err != nil {

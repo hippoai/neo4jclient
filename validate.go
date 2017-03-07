@@ -6,7 +6,7 @@ import "strings"
 func (payload *Payload) Validate() error {
 
 	for _, statement := range payload.Statements {
-		err := validate(statement.Statement)
+		err := validate(statement.Cypher)
 		if err != nil {
 			return err
 		}

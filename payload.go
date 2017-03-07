@@ -6,9 +6,10 @@ type Parameters struct {
 	Props map[string]interface{} `json:"props"`
 }
 type Statement struct {
-	Statement          string     `json:"statement"`
+	Cypher             string     `json:"cypher"`
 	Parameters         Parameters `json:"parameters"`
 	ResultDataContents []string   `json:"resultDataContents"`
+	Description        string     `json:"description"`
 }
 type Statements []*Statement
 type Payload struct {
@@ -16,10 +17,11 @@ type Payload struct {
 }
 
 // NewStatement formats a new statement for a payload
-func NewStatement(statement string, props map[string]interface{}) *Statement {
+func NewStatement(cypher string, description string, props map[string]interface{}) *Statement {
 	s := &Statement{
-		Statement:          statement,
+		Cypher:             cypher,
 		ResultDataContents: []string{RESULT_DATA_CONTENTS},
+		Description:        description,
 	}
 	if props != nil {
 		s.Parameters = Parameters{Props: props}
@@ -28,8 +30,8 @@ func NewStatement(statement string, props map[string]interface{}) *Statement {
 	return s
 }
 
-func NewStatementNoProps(statement string) *Statement {
-	return NewStatement(statement, map[string]interface{}{})
+func NewStatementNoProps(cypher, description string) *Statement {
+	return NewStatement(cypher, description, map[string]interface{}{})
 }
 
 // NewPayload instanciates a payload from a list of statement
@@ -40,14 +42,14 @@ func NewPayload(statements ...*Statement) *Payload {
 }
 
 // NewSinglePayload instanciates a payload from a single statement
-func NewSinglePayload(statement string, props map[string]interface{}) *Payload {
-	s := NewStatement(statement, props)
+func NewSinglePayload(statement, description string, props map[string]interface{}) *Payload {
+	s := NewStatement(statement, description, props)
 	return NewPayload(s)
 }
 
 // NewSinglePayload instanciates a payload from a single statement
-func NewSinglePayloadNoProps(statement string) *Payload {
-	return NewSinglePayload(statement, map[string]interface{}{})
+func NewSinglePayloadNoProps(statement, description string) *Payload {
+	return NewSinglePayload(statement, description, map[string]interface{}{})
 }
 
 func (p *Payload) SetDataContentsToRow() {
