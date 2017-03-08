@@ -14,12 +14,6 @@ import (
 // Request calls the database and returns the response
 func (n *Neo) Request(payload *Payload) (*Response, error) {
 
-	// First, validate the payload
-	err := payload.Validate()
-	if err != nil {
-		return nil, err
-	}
-
 	serializedPayload, err := json.Marshal(payload)
 	if err != nil {
 		return nil, err
