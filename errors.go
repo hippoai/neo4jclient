@@ -21,3 +21,7 @@ func errDeleteButNoReturn(cypher string) error {
 func errNeo4JRequest() error {
 	return goerr.NewS(ERR_NEO4J_REQUEST)
 }
+
+func ErrNNotAvailable() error {
+	return goerr.NewS(ERR_N_NOT_AVAILABLE)
+}

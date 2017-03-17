@@ -10,6 +10,7 @@ type Statement struct {
 	Parameters         Parameters `json:"parameters"`
 	ResultDataContents []string   `json:"resultDataContents"`
 	Description        string     `json:"description"`
+	IsJustACount       bool       `json:"isJustACount"`
 }
 type Statements []*Statement
 type Payload struct {
@@ -22,6 +23,7 @@ func NewStatement(cypher string, description string, props map[string]interface{
 		Cypher:             cypher,
 		ResultDataContents: []string{RESULT_DATA_CONTENTS},
 		Description:        description,
+		IsJustACount:       false,
 	}
 	if props != nil {
 		s.Parameters = Parameters{Props: props}
