@@ -7,9 +7,10 @@ import (
 
 // AddAtTheEnd adds a string at the end of the Cypher query
 func (s *Statement) AddAtTheEnd(addMe string) *Statement {
-	s.clean()
-	s.Cypher = fmt.Sprintf("%s\n%s", s.Cypher, addMe)
-	return s
+	copiedS := s.Copy()
+	copiedS.clean()
+	copiedS.Cypher = fmt.Sprintf("%s\n%s", copiedS.Cypher, addMe)
+	return copiedS
 }
 
 // AddOrderBy adds ordering to the query

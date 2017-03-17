@@ -18,7 +18,7 @@ func TestAddAtTheEnd(t *testing.T) {
   `
 
 	statement := NewStatementNoProps(cypher, "fake query")
-	statement.AddAtTheEnd("I AM HERE")
+	newStatement := statement.AddAtTheEnd("I AM HERE")
 
 	newCypher := `
     MATCH (c:Hello:World)
@@ -30,9 +30,9 @@ func TestAddAtTheEnd(t *testing.T) {
 	s2 := NewStatementNoProps(newCypher, "ok")
 	s2.clean()
 
-	if removeWS(statement.Cypher) != removeWS(s2.Cypher) {
+	if removeWS(newStatement.Cypher) != removeWS(s2.Cypher) {
 		t.Fatalf("Expected cypher %s but got %s",
-			removeWS(statement.Cypher),
+			removeWS(newStatement.Cypher),
 			removeWS(s2.Cypher),
 		)
 	}
@@ -48,7 +48,7 @@ func TestAddOrderBy(t *testing.T) {
   `
 
 	statement := NewStatementNoProps(cypher, "fake query")
-	statement.AddOrderBy(false, "d.name", "e.id")
+	newStatement := statement.AddOrderBy(false, "d.name", "e.id")
 
 	newCypher := `
     MATCH (c:Hello:World)
@@ -60,9 +60,9 @@ func TestAddOrderBy(t *testing.T) {
 	s2 := NewStatementNoProps(newCypher, "ok")
 	s2.clean()
 
-	if removeWS(statement.Cypher) != removeWS(s2.Cypher) {
+	if removeWS(newStatement.Cypher) != removeWS(s2.Cypher) {
 		t.Fatalf("Expected cypher %s but got %s",
-			removeWS(statement.Cypher),
+			removeWS(newStatement.Cypher),
 			removeWS(s2.Cypher),
 		)
 	}
@@ -77,7 +77,7 @@ func TestAddSkipAndLimit(t *testing.T) {
   `
 
 	statement := NewStatementNoProps(cypher, "fake query")
-	statement.
+	newStatement := statement.
 		AddOrderBy(false, "d.name", "e.id").
 		AddSkipAndLimit(100, 10)
 
@@ -93,9 +93,9 @@ func TestAddSkipAndLimit(t *testing.T) {
 	s2 := NewStatementNoProps(newCypher, "ok")
 	s2.clean()
 
-	if removeWS(statement.Cypher) != removeWS(s2.Cypher) {
+	if removeWS(newStatement.Cypher) != removeWS(s2.Cypher) {
 		t.Fatalf("Expected cypher %s but got %s",
-			removeWS(statement.Cypher),
+			removeWS(newStatement.Cypher),
 			removeWS(s2.Cypher),
 		)
 	}
