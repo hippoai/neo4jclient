@@ -35,3 +35,19 @@ func (neo *Neo) RequestConvertAndGetN(payload *Payload) (*graphgo.Output, int, e
 	return out, n, nil
 
 }
+
+// RequestAndGetN
+func (neo *Neo) RequestAndGetN(payload *Payload) (*Response, int, error) {
+	response, err := neo.Request(payload)
+	if err != nil {
+		return nil, 0, errNeo4JRequest()
+	}
+
+	n, err := response.GetN()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return response, n, nil
+
+}
