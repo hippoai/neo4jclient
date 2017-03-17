@@ -60,3 +60,23 @@ func (p *Payload) SetDataContentsToRow() {
 		statement.ResultDataContents = r
 	}
 }
+
+// NewPaginatedPayload creates a payload
+// from one statement, adding ordering, skip + limit to it
+// and returning the total number of responses it ran alone (for pages number)
+func NewPaginatedPayload(
+	statement *Statement,
+	ascending bool, orderMe string,
+	skip, limit int,
+	countMe string,
+) *Payload {
+
+	return NewPayload(
+		statement.
+			AddOrderBy(ascending, orderMe).
+			AddSkipAndLimit(skip, limit),
+		statement.
+			OnlyReturnACount(countMe),
+	)
+
+}
