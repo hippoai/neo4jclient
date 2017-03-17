@@ -110,7 +110,7 @@ func TestOnlyReturnCount(t *testing.T) {
   `
 
 	statement := NewStatementNoProps(cypher, "fake query")
-	statement.
+	newStatement := statement.
 		OnlyReturnACount("d.hello")
 
 	newCypher := `
@@ -122,9 +122,9 @@ func TestOnlyReturnCount(t *testing.T) {
 	s2 := NewStatementNoProps(newCypher, "ok")
 	s2.clean()
 
-	if removeWS(statement.Cypher) != removeWS(s2.Cypher) {
+	if removeWS(newStatement.Cypher) != removeWS(s2.Cypher) {
 		t.Fatalf("Expected cypher %s but got %s",
-			removeWS(statement.Cypher),
+			removeWS(newStatement.Cypher),
 			removeWS(s2.Cypher),
 		)
 	}

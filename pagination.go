@@ -45,12 +45,35 @@ func (s *Statement) clean() {
 	s.Cypher = strings.Join(newRows, "\n")
 }
 
+func (s *Statement) Copy() *Statement {
+	copiedResultDataContents := []string{}
+	for _, elt := range s.ResultDataContents {
+		copiedResultDataContents = append(copiedResultDataContents, elt)
+	}
+
+	copiedProps := map[string]interface{}{}
+	for k, v := range s.Parameters.Props {
+		copiedProps[k] = v
+	}
+
+	return &Statement{
+		Cypher:             s.Cypher,
+		Parameters:         Parameters{Props: copiedProps},
+		ResultDataContents: copiedResultDataContents,
+		Description:        s.Description,
+		IsJustACount:       s.IsJustACount,
+	}
+
+}
+
 // OnlyReturnACount breaks down the query row by row
 // removes the previous RETURN if there was one on the last line
 // and adds a count for the given "countMe" variable
 func (s *Statement) OnlyReturnACount(countMe string) *Statement {
-	s.clean()
-	cypherRows := strings.Split(s.Cypher, "\n")
+	copiedS := s.Copy()
+
+	copiedS.clean()
+	cypherRows := strings.Split(copiedS.Cypher, "\n")
 
 	cypherCount := fmt.Sprintf("RETURN COUNT(%s) AS _n", countMe)
 
@@ -61,9 +84,9 @@ func (s *Statement) OnlyReturnACount(countMe string) *Statement {
 		cypherRows = append(cypherRows, cypherCount)
 	}
 
-	s.Cypher = strings.Join(cypherRows, "\n")
-	s.ResultDataContents = []string{"row"}
-	s.IsJustACount = true
+	copiedS.Cypher = strings.Join(cypherRows, "\n")
+	copiedS.ResultDataContents = []string{"row"}
+	copiedS.IsJustACount = true
 
-	return s
+	return copiedS
 }

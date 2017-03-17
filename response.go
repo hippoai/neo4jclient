@@ -1,5 +1,11 @@
 package neo4jclient
 
+import (
+	"log"
+
+	"github.com/hippoai/goutil"
+)
+
 // The following types help unmarshal a response from Neo4J
 
 type ResultNode struct {
@@ -39,6 +45,8 @@ type Response struct {
 
 // GetN returns the number of nodes, if available in one of the statements
 func (response *Response) GetN() (int, error) {
+	log.Println("r1", goutil.Pretty(response))
+
 	for _, result := range response.Results {
 		if (len(result.Columns) != 1) || (result.Columns[0] != "_n") {
 			continue
