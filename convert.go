@@ -1,8 +1,6 @@
 package neo4jclient
 
 import (
-	"log"
-
 	"github.com/hippoai/graphgo"
 )
 
@@ -10,7 +8,6 @@ import (
 func Convert(r *Response) (*graphgo.Output, error) {
 
 	if len(r.Errors) > 0 {
-		log.Println("Response error", r.Errors)
 		return nil, errNeo(r.Errors)
 	}
 

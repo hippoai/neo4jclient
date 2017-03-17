@@ -10,6 +10,7 @@ type Statement struct {
 	Parameters         Parameters `json:"parameters"`
 	ResultDataContents []string   `json:"resultDataContents"`
 	Description        string     `json:"description"`
+	IsJustACount       bool       `json:"isJustACount"`
 }
 type Statements []*Statement
 type Payload struct {
@@ -22,6 +23,7 @@ func NewStatement(cypher string, description string, props map[string]interface{
 		Cypher:             cypher,
 		ResultDataContents: []string{RESULT_DATA_CONTENTS},
 		Description:        description,
+		IsJustACount:       false,
 	}
 	if props != nil {
 		s.Parameters = Parameters{Props: props}
@@ -57,4 +59,24 @@ func (p *Payload) SetDataContentsToRow() {
 	for _, statement := range p.Statements {
 		statement.ResultDataContents = r
 	}
+}
+
+// NewPaginatedPayload creates a payload
+// from one statement, adding ordering, skip + limit to it
+// and returning the total number of responses it ran alone (for pages number)
+func NewPaginatedPayload(
+	statement *Statement,
+	ascending bool, orderMe string,
+	skip, limit int,
+	countMe string,
+) *Payload {
+
+	return NewPayload(
+		statement.
+			AddOrderBy(ascending, orderMe).
+			AddSkipAndLimit(skip, limit),
+		statement.
+			OnlyReturnACount(countMe),
+	)
+
 }
