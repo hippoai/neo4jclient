@@ -36,3 +36,27 @@ type Response struct {
 	Results Results `json:"results"`
 	Errors  Errors  `json:"errors"`
 }
+
+// GetN returns the number of nodes, if available in one of the statements
+func (response *Response) GetN() (int, error) {
+
+	for _, result := range response.Results {
+		if (len(result.Columns) != 1) || (result.Columns[0] != "_n") {
+			continue
+		}
+
+		// At this point we now we have one column _n, we expect data to be of size 1 here
+		if len(result.Data) != 1 {
+			continue
+		}
+
+		nAsFloat64, ok := result.Data[0].Row[0].(float64)
+		if !ok {
+			continue
+		}
+		return int(nAsFloat64), nil
+
+	}
+
+	return 0, ErrNNotAvailable()
+}
