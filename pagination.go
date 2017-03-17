@@ -62,6 +62,7 @@ func (s *Statement) OnlyReturnACount(countMe string) *Statement {
 	}
 
 	s.Cypher = strings.Join(cypherRows, "\n")
+	s.ResultDataContents = []string{"row"}
 
 	return s
 }
