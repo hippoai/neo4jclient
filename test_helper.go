@@ -38,7 +38,7 @@ func insertProp(q, key string, value interface{}) string {
 // IsSameQuery assesses whether two queries are the same
 func IsSameQuery(expected string, statement *Statement) error {
 	cExpected := compressQuery(expected)
-	cOriginal := compressQuery(statement.Statement)
+	cOriginal := compressQuery(statement.Cypher)
 
 	if statement.Parameters.Props != nil {
 		for key, value := range statement.Parameters.Props {
@@ -63,7 +63,7 @@ func ErrSameQuery(cExpected, cOriginal, expected string, statement *Statement) e
 		"ERR_NOT_SAME_QUERY",
 		map[string]interface{}{
 			"expected":  expected,
-			"statement": statement.Statement,
+			"cypher":    statement.Cypher,
 			"props":     statement.Parameters.Props,
 			"cExpected": cExpected,
 			"cOriginal": cOriginal,
