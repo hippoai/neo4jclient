@@ -68,14 +68,19 @@ func NewPaginatedPayload(
 	statement *Statement,
 	ascending bool, orderMe string,
 	skip, limit int,
+	countMe string,
 ) *Payload {
+
+	if countMe == "" {
+		countMe = orderMe
+	}
 
 	return NewPayload(
 		statement.
 			AddOrderBy(ascending, orderMe).
 			AddSkipAndLimit(skip, limit),
 		statement.
-			OnlyReturnACount(orderMe),
+			OnlyReturnACount(countMe),
 	)
 
 }
