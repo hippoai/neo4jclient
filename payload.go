@@ -68,7 +68,6 @@ func NewPaginatedPayload(
 	statement *Statement,
 	ascending bool, orderMe string,
 	skip, limit int,
-	countMe string,
 ) *Payload {
 
 	return NewPayload(
@@ -76,7 +75,7 @@ func NewPaginatedPayload(
 			AddOrderBy(ascending, orderMe).
 			AddSkipAndLimit(skip, limit),
 		statement.
-			OnlyReturnACount(countMe),
+			OnlyReturnACount(orderMe),
 	)
 
 }
