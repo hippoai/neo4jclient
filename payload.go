@@ -71,6 +71,10 @@ func NewPaginatedPayload(
 	countMe string,
 ) *Payload {
 
+	if countMe == "" {
+		countMe = orderMe
+	}
+
 	return NewPayload(
 		statement.
 			AddOrderBy(ascending, orderMe).
