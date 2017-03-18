@@ -22,6 +22,10 @@ func ConvertToRGraph(r *Response) ([]*graphgo.Output, error) {
 		// For each result (== statement), flatten all the rows in the graph
 		for _, resultData := range result.Data {
 
+			if len(resultData.Graph.Nodes) == 0 {
+				continue
+			}
+
 			out := graphgo.NewOutput()
 
 			// First add all the nodes
