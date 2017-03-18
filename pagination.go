@@ -15,6 +15,10 @@ func (s *Statement) AddAtTheEnd(addMe string) *Statement {
 
 // AddOrderBy adds ordering to the query
 func (s *Statement) AddOrderBy(ascending bool, orderMe ...string) *Statement {
+	if (len(orderMe) == 0) || orderMe[0] == "" {
+		return s
+	}
+
 	orderStr := "DESC"
 	if ascending {
 		orderStr = "ASC"
@@ -71,6 +75,11 @@ func (s *Statement) Copy() *Statement {
 // removes the previous RETURN if there was one on the last line
 // and adds a count for the given "countMe" variable
 func (s *Statement) OnlyReturnACount(countMe string) *Statement {
+	// COUNT(*) if nothing was specified for the countMe parameter
+	if countMe == "" {
+		countMe = "*"
+	}
+
 	copiedS := s.Copy()
 
 	copiedS.clean()

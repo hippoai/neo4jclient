@@ -29,23 +29,43 @@ func (neo *Neo) RequestAndConvertToRGraph(payload *Payload) ([]*graphgo.Output, 
 }
 
 // RequestConvertAndGetN for ordered responses
-func (neo *Neo) RequestConvertAndGetN(payload *Payload) ([]*graphgo.Output, int, error) {
+func (neo *Neo) RequestConvertToRGraphAndGetN(payload *Payload) ([]*graphgo.Output, int, int, error) {
 	response, err := neo.Request(payload)
 	if err != nil {
-		return nil, 0, errNeo4JRequest()
+		return nil, 0, 0, errNeo4JRequest()
 	}
 
 	outputs, err := ConvertToRGraph(response)
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, err
 	}
 
 	n, err := response.GetN()
 	if err != nil {
-		return nil, 0, err
+		return nil, 0, 0, err
 	}
 
-	return outputs, n, nil
+	return outputs, len(outputs), n, nil
+}
+
+// RequestConvertAndGetN for ordered responses
+func (neo *Neo) RequestConvertToGraphAndGetN(payload *Payload) (*graphgo.Output, int, int, error) {
+	response, err := neo.Request(payload)
+	if err != nil {
+		return nil, 0, 0, errNeo4JRequest()
+	}
+
+	out, size, err := ConvertAndGetSize(response)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+
+	n, err := response.GetN()
+	if err != nil {
+		return nil, 0, 0, err
+	}
+
+	return out, size, n, nil
 }
 
 // RequestAndGetN
