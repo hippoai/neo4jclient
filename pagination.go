@@ -88,13 +88,16 @@ func (s *Statement) OnlyReturnACount(countMe string) *Statement {
 	cypherCount := fmt.Sprintf("RETURN COUNT(%s) AS _n", countMe)
 
 	// Replace the last row if it does not have a RETURN
-	if strings.Contains(cypherRows[len(cypherRows)-1], "RETURN") {
-		cypherRows[len(cypherRows)-1] = cypherCount
-	} else {
-		cypherRows = append(cypherRows, cypherCount)
+	newCypherRows := []string{}
+	for _, cypherRow := range cypherRows {
+		if !strings.Contains(cypherRow, "RETURN") {
+			newCypherRows = append(newCypherRows, cypherRow)
+		}
 	}
 
-	copiedS.Cypher = strings.Join(cypherRows, "\n")
+	newCypherRows = append(newCypherRows, cypherCount)
+
+	copiedS.Cypher = strings.Join(newCypherRows, "\n")
 	copiedS.ResultDataContents = []string{"row"}
 	copiedS.IsJustACount = true
 
