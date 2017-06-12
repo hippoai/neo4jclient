@@ -46,6 +46,10 @@ func (n *Neo) Request(payload *Payload) (*Response, error) {
 		return nil, err
 	}
 
+	if len(response.Errors) != 0 {
+		return nil, ErrCypherQuery(response.Errors)
+	}
+
 	return response, nil
 
 }
