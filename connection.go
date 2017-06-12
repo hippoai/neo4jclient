@@ -3,7 +3,6 @@ package neo4jclient
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
 
 	"github.com/hippoai/env"
 )
@@ -39,7 +38,7 @@ func NewConnectionFromEnv() (*Neo, error) {
 
 	parsed, err := env.Parse(ENV_DB_USERNAME, ENV_DB_PASSWORD, ENV_DB_ENDPOINT)
 	if err != nil {
-		log.Fatalf(err.Error())
+		return nil, err
 	}
 
 	return NewConnection(parsed[ENV_DB_USERNAME], parsed[ENV_DB_PASSWORD], parsed[ENV_DB_ENDPOINT])

@@ -18,10 +18,18 @@ func errDeleteButNoReturn(cypher string) error {
 	})
 }
 
-func errNeo4JRequest() error {
-	return goerr.NewS(ERR_NEO4J_REQUEST)
+func errNeo4JRequest(err error) error {
+	return goerr.New(ERR_NEO4J_REQUEST, map[string]interface{}{
+		"error": err,
+	})
 }
 
 func ErrNNotAvailable() error {
 	return goerr.NewS(ERR_N_NOT_AVAILABLE)
+}
+
+func ErrCypherQuery(errs Errors) error {
+	return goerr.New(ERR_CYPHER_QUERY, map[string]interface{}{
+		"errors": errs,
+	})
 }
